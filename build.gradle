@@ -28,7 +28,7 @@ jar {
                    'Implementation-Version': project.version)
     }
     
-    archiveBaseName = 'ic4j-java11transportn'
+    archiveBaseName = 'ic4j-java11transport'
 }
 
 task fatJar(type: Jar) {
@@ -48,12 +48,23 @@ test {
 }
 
 dependencies {
+	implementation group: 'org.ic4j', name: 'ic4j-candid', version: '0.6.5'
+	
 	implementation group: 'org.ic4j', name: 'ic4j-agent', version: '0.6.5'
+	
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+	
+		// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'
 	
 	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
 	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
 		
-	// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-	testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32'	
+	// https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
+	testImplementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.70'
+
+	// https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on
+	testImplementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'	
 }
 

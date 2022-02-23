@@ -46,13 +46,22 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 	URI uri;
 	
 	ReplicaJavaHttpTransport(URI url) {
-		this.uri = url;
+
+		//check if url ends with /	
+		if('/' == url.toString().charAt(url.toString().length() - 1))
+			this.uri = URI.create(url.toString().substring(0, url.toString().length() - 1));
+		else	
+			this.uri = url;
 
 		client = HttpClient.newHttpClient();
 	}
 
 	ReplicaJavaHttpTransport(URI url, int timeout) {	
-		this.uri = url;
+		//check if url ends with /	
+		if('/' == url.toString().charAt(url.toString().length() - 1))
+			this.uri = URI.create(url.toString().substring(0, url.toString().length() - 1));
+		else	
+			this.uri = url;
 
 		client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(timeout)).build();
 	}
