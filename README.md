@@ -12,20 +12,20 @@ Agent agent = new AgentBuilder().transport(transport).identity(identity).build()
 
 To add IC4J Java 11 Transport library to your Java project use Maven or Gradle import from Maven Central.
 
-<a href="https://search.maven.org/artifact/ic4j/ic4j-java11transport/0.6.5/jar">
-https://search.maven.org/artifact/ic4j/ic4j-java11transport/0.6.5/jar
+<a href="https://search.maven.org/artifact/ic4j/ic4j-java11transport/0.6.6/jar">
+https://search.maven.org/artifact/ic4j/ic4j-java11transport/0.6.6/jar
 </a>
 
 ```
 <dependency>
   <groupId>org.ic4j</groupId>
   <artifactId>ic4j-java11transport</artifactId>
-  <version>0.6.5</version>
+  <version>0.6.6</version>
 </dependency>
 ```
 
 ```
-implementation 'org.ic4j:ic4j-java11transport:0.6.5'
+implementation 'org.ic4j:ic4j-java11transport:0.6.6'
 ```
 
 
