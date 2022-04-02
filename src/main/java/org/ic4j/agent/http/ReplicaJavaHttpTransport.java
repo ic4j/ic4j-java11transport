@@ -35,10 +35,6 @@ import org.slf4j.LoggerFactory;
 
 
 public class ReplicaJavaHttpTransport implements ReplicaTransport {
-	static final String CONTENT_TYPE = "Content-Type"; 
-	static final int TIMEOUT = 2;
-	static final long CONNECTION_TTL = 1L;
-
 	protected static final Logger LOG = LoggerFactory.getLogger(ReplicaOkHttpTransport.class);
 
 	final HttpClient client;
@@ -83,7 +79,7 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 		
 		HttpRequest httpRequest;
 		try {
-			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + ReplicaHttpProperties.STATUS_URL_PART)).GET().header(CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).build();
+			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + ReplicaHttpProperties.STATUS_URL_PART)).GET().header(ReplicaHttpProperties.CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).build();
 
 		} catch (URISyntaxException e) {
 			throw AgentError.create(AgentError.AgentErrorCode.URL_PARSE_ERROR, e);
@@ -95,7 +91,7 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 	public CompletableFuture<byte[]> query(Principal containerId, byte[] envelope) {			
 		HttpRequest httpRequest;
 		try {
-			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.QUERY_URL_PART, containerId.toString()))).header(CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).POST(BodyPublishers.ofByteArray(envelope)).build();
+			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.QUERY_URL_PART, containerId.toString()))).header(ReplicaHttpProperties.CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).POST(BodyPublishers.ofByteArray(envelope)).build();
 		} catch (URISyntaxException e) {
 			throw AgentError.create(AgentError.AgentErrorCode.URL_PARSE_ERROR, e);
 		}		
@@ -107,7 +103,7 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 	public CompletableFuture<byte[]> call(Principal containerId, byte[] envelope, RequestId requestId) {		
 		HttpRequest httpRequest;
 		try {
-			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.CALL_URL_PART, containerId.toString()))).header(CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).POST(BodyPublishers.ofByteArray(envelope)).build();
+			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.CALL_URL_PART, containerId.toString()))).header(ReplicaHttpProperties.CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).POST(BodyPublishers.ofByteArray(envelope)).build();
 		} catch (URISyntaxException e) {
 			throw AgentError.create(AgentError.AgentErrorCode.URL_PARSE_ERROR, e);
 		}		
@@ -119,7 +115,7 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 	public CompletableFuture<byte[]> readState(Principal containerId, byte[] envelope) {
 		HttpRequest httpRequest;
 		try {
-			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.READ_STATE_URL_PART, containerId.toString()))).header(CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).POST(BodyPublishers.ofByteArray(envelope)).build();
+			httpRequest = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.READ_STATE_URL_PART, containerId.toString()))).header(ReplicaHttpProperties.CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).POST(BodyPublishers.ofByteArray(envelope)).build();
 		} catch (URISyntaxException e) {
 			throw AgentError.create(AgentError.AgentErrorCode.URL_PARSE_ERROR, e);
 		}		
