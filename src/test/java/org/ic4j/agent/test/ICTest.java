@@ -19,6 +19,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.ic4j.agent.Agent;
 import org.ic4j.agent.AgentBuilder;
 import org.ic4j.agent.AgentError;
+import org.ic4j.agent.Request;
+import org.ic4j.agent.Response;
 import org.ic4j.agent.NonceFactory;
 import org.ic4j.agent.ReplicaTransport;
 import org.ic4j.agent.RequestStatusResponse;
@@ -119,6 +121,41 @@ public class ICTest {
 					LOG.debug(ex.getLocalizedMessage(), ex);
 					Assertions.fail(ex.getLocalizedMessage());
 				}
+				
+				//test with headers
+				
+				Request<byte[]> queryAgentRequest = new Request<byte[]>(buf);
+				CompletableFuture<Response<byte[]>> queryAgentResponse = agent.queryRaw(Principal.fromString(TestProperties.IC_CANISTER_ID),
+						Principal.fromString(TestProperties.IC_CANISTER_ID), "echoRecord", queryAgentRequest, Optional.empty());
+
+				try {
+					byte[] queryOutput = queryAgentResponse.get().getPayload();
+
+					IDLType[] idlTypes = { idlValue.getIDLType() };
+
+					IDLArgs outArgs = IDLArgs.fromBytes(queryOutput, idlTypes);
+
+					LOG.info(outArgs.getArgs().get(0).getValue().toString());
+					Assertions.assertEquals(mapValue, outArgs.getArgs().get(0).getValue());
+					
+					Map<String,String> headers = queryAgentResponse.get().getHeaders();
+					
+					for(String name : headers.keySet())
+					{
+						LOG.info("Header " + name + ":" + headers.get(name));
+					}
+					
+					Assertions.assertTrue(headers.containsKey(Response.X_IC_CANISTER_ID_HEADER));
+					Assertions.assertTrue(headers.containsKey(Response.X_IC_NODE_ID_HEADER));
+					Assertions.assertTrue(headers.containsKey(Response.X_IC_SUBNET_ID_HEADER));
+					Assertions.assertTrue(headers.containsKey("content-type"));
+					
+					Assertions.assertEquals(headers.get("content-type"),"application/cbor");
+					
+				} catch (Throwable ex) {
+					LOG.debug(ex.getLocalizedMessage(), ex);
+					Assertions.fail(ex.getLocalizedMessage());
+				}				
 
 				// test String argument
 				args = new ArrayList<IDLValue>();
@@ -162,6 +199,68 @@ public class ICTest {
 				LOG.info(outArgs.getArgs().get(0).getValue().toString());
 
 				Assertions.assertEquals(outArgs.getArgs().get(0).getValue().toString(), "Hello, " + value + "!");
+				
+				// test with headers
+				
+				Request<byte[]> updateAgentRequest = new Request<byte[]>(buf);
+				
+				CompletableFuture<Response<RequestId>> agentUpdateResponse = agent.updateRaw(
+						Principal.fromString(TestProperties.IC_CANISTER_ID),
+						Principal.fromString(TestProperties.IC_CANISTER_ID), "greet", updateAgentRequest, ingressExpiryDatetime);
+
+				requestId = agentUpdateResponse.get().getPayload();
+				
+				Map<String,String> headers = agentUpdateResponse.get().getHeaders();
+				
+				for(String name : headers.keySet())
+				{
+					LOG.info("Header " + name + ":" + headers.get(name));
+				}
+				
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_CANISTER_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_NODE_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_SUBNET_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey("content-length"));
+				
+				Assertions.assertEquals(headers.get("content-length"),"0");				
+
+				LOG.debug("Request Id:" + requestId.toHexString());
+
+				TimeUnit.SECONDS.sleep(10);
+				
+				Request<Void> statusAgentRequest = new Request<Void>(null);
+
+				CompletableFuture<Response<RequestStatusResponse>> agentStatusResponse = agent.requestStatusRaw(requestId,
+						Principal.fromString(TestProperties.IC_CANISTER_ID), statusAgentRequest);
+
+				requestStatusResponse = agentStatusResponse.get().getPayload();
+
+				LOG.debug(requestStatusResponse.status.toString());
+
+				Assertions.assertEquals(requestStatusResponse.status.toString(),
+						RequestStatusResponse.REPLIED_STATUS_VALUE);
+
+				output = requestStatusResponse.replied.get().arg;
+
+				outArgs = IDLArgs.fromBytes(output);
+
+				LOG.info(outArgs.getArgs().get(0).getValue().toString());
+
+				Assertions.assertEquals(outArgs.getArgs().get(0).getValue().toString(), "Hello, " + value + "!");
+				
+				headers = agentStatusResponse.get().getHeaders();
+				
+				for(String name : headers.keySet())
+				{
+					LOG.info("Header " + name + ":" + headers.get(name));
+				}
+				
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_CANISTER_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_NODE_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_SUBNET_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey("content-type"));
+				
+				Assertions.assertEquals(headers.get("content-type"),"application/cbor");				
 
 				args = new ArrayList<IDLValue>();
 
@@ -181,8 +280,30 @@ public class ICTest {
 				outArgs = IDLArgs.fromBytes(output);
 
 				LOG.info(outArgs.getArgs().get(0).getValue().toString());
+				
+				// test with header
+				updateBuilder = UpdateBuilder
+						.create(agent, Principal.fromString(TestProperties.IC_CANISTER_ID), "greet").arg(buf);
 
+				CompletableFuture<RequestId> builderResponseWithHeader = updateBuilder.call();
+					
+				Response<byte[]> responseWithHeader = updateBuilder.getState(builderResponseWithHeader.get(), null, org.ic4j.agent.Waiter.create(60, 5)).get();		
 
+				output = responseWithHeader.getPayload();
+				outArgs = IDLArgs.fromBytes(output);
+
+				LOG.info(outArgs.getArgs().get(0).getValue().toString());
+				
+				Assertions.assertEquals("Hello, " + stringValue + "!", outArgs.getArgs().get(0).getValue());
+				
+				headers = responseWithHeader.getHeaders();
+				
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_CANISTER_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_NODE_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey(Response.X_IC_SUBNET_ID_HEADER));
+				Assertions.assertTrue(headers.containsKey("content-type"));	
+				
+				Assertions.assertEquals(headers.get("content-type"),"application/cbor");
 			} catch (Throwable ex) {
 				LOG.error(ex.getLocalizedMessage(), ex);
 				Assertions.fail(ex.getMessage());
