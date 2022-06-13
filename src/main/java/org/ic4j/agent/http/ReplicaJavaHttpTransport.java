@@ -224,5 +224,9 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 		}
 
 	}
+	
+	public void close()
+	{	
+	}
 
 }
