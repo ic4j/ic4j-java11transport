@@ -174,9 +174,8 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 
 	CompletableFuture<ReplicaResponse> execute(HttpRequest httpRequest) throws AgentError {
 
-		try {
-			URI requestUri = httpRequest.uri();
-
+		URI requestUri = httpRequest.uri();
+		try {		
 			LOG.debug("Executing request " + httpRequest.method() + " " + requestUri);
 
 			CompletableFuture<ReplicaResponse> response = new CompletableFuture<ReplicaResponse>();
@@ -185,41 +184,49 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 	                client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
 
 	        httpResponseFuture.whenComplete((httpResponse, ex) -> {
-				if (ex == null) {
-					if (httpResponse == null)
-						response.completeExceptionally(
-								AgentError.create(AgentError.AgentErrorCode.HTTP_ERROR ));
-
-					ReplicaResponse replicaResponse = new ReplicaResponse();
-					
-					replicaResponse.headers = new HashMap<String,String>();
-					
-					HttpHeaders headers = httpResponse.headers();					
-					
-					for(String name : headers.map().keySet())
-					{	
-						String value = null;
+				try {
+		        	if (ex == null) {
+						if (httpResponse == null)
+							response.completeExceptionally(
+									AgentError.create(AgentError.AgentErrorCode.HTTP_ERROR ));
+	
+						ReplicaResponse replicaResponse = new ReplicaResponse();
 						
-						if(headers.firstValue(name).isPresent())
-							value = headers.firstValue(name).get();
-												
-						replicaResponse.headers.put(name, value);	
+						replicaResponse.headers = new HashMap<String,String>();
+						
+						HttpHeaders headers = httpResponse.headers();					
+						
+						for(String name : headers.map().keySet())
+						{	
+							String value = null;
+							
+							if(headers.firstValue(name).isPresent())
+								value = headers.firstValue(name).get();
+													
+							replicaResponse.headers.put(name, value);	
+						}
+						
+						byte[] bytes = httpResponse.body();
+						if (bytes == null)
+							bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
+						
+						replicaResponse.payload = bytes;
+						response.complete(replicaResponse);	
 					}
-					
-					byte[] bytes = httpResponse.body();
-					if (bytes == null)
-						bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
-					
-					replicaResponse.payload = bytes;
-					response.complete(replicaResponse);	
-				}
-				else 
-					response.completeExceptionally(ex);
+					else 
+						response.completeExceptionally(ex);
+	        }catch(Throwable t)
+			{
+				LOG.debug(requestUri + "->" + t);
+				response.completeExceptionally(
+						AgentError.create(AgentError.AgentErrorCode.HTTP_ERROR, t, t.getLocalizedMessage()));						
+			}
 	        });
 
 			return response;
 
 		} catch (Exception e) {
+			LOG.debug(requestUri + "->" + e);
 			throw AgentError.create(AgentError.AgentErrorCode.URL_PARSE_ERROR, e);
 		}
 
