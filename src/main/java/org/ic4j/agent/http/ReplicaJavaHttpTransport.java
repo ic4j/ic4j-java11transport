@@ -15,11 +15,9 @@
 */
 package org.ic4j.agent.http;
 
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
-import java.net.http.HttpClient.Builder;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
@@ -96,7 +94,9 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 
 	public CompletableFuture<ReplicaResponse> query(Principal containerId, byte[] envelope, Map<String,String> headers) {			
 		try {
-			HttpRequest.Builder builder = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.QUERY_URL_PART, containerId.toString()))).header(ReplicaHttpProperties.CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE).POST(BodyPublishers.ofByteArray(envelope));
+			HttpRequest.Builder builder = HttpRequest.newBuilder().uri(new URI(uri.toString() + ReplicaHttpProperties.API_VERSION_URL_PART + String.format(ReplicaHttpProperties.QUERY_URL_PART, containerId.toString())))
+					.header(ReplicaHttpProperties.CONTENT_TYPE, ReplicaHttpProperties.DFINITY_CONTENT_TYPE)
+					.POST(BodyPublishers.ofByteArray(envelope));	
 
 			if(headers != null)
 			{
@@ -109,7 +109,7 @@ public class ReplicaJavaHttpTransport implements ReplicaTransport {
 				}			
 			}
 			
-			HttpRequest httpRequest = builder.build();
+			HttpRequest httpRequest = builder.build();		
 			
 			return this.execute(httpRequest);
 		
