@@ -13,12 +13,11 @@ plugins {
 
 
 group 'org.ic4j'
-version '0.7.1'
+version '0.7.2'
 
 sourceCompatibility = 11
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -48,14 +47,14 @@ test {
 }
 
 dependencies {
-	implementation group: 'org.ic4j', name: 'ic4j-agent', version: '0.7.1'
-	implementation group: 'org.ic4j', name: 'ic4j-candid', version: '0.7.1'	
+	implementation group: 'org.ic4j', name: 'ic4j-agent', version: '0.7.2'
+	implementation group: 'org.ic4j', name: 'ic4j-candid', version: '0.7.2'	
 	
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.16.0'
 	
 		// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.13'
+	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.16'
 		
 	// https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
 	implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78.1'
