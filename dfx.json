@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "canisters": {
+    "ictest": {
+      "type": "motoko",
+      "main": "src/test/ICTest.mo",
+      "args": "--release",
+      "optimize": "size",
+      "gzip": true
+    }
+  }
+}

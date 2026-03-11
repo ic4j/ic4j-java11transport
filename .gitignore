@@ -1,0 +1,10 @@
+/.gradle/
+/bin/
+/gradle.properties
+/secring.gpg
+/build-export.gradle
+/build/
+/.classpath
+/.project
+/.dfx/
+.vscode/settings.json

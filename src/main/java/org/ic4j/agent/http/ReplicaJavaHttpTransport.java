@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class ReplicaJavaHttpTransport implements ReplicaTransport {
-	protected static final Logger LOG = LoggerFactory.getLogger(ReplicaOkHttpTransport.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(ReplicaJavaHttpTransport.class);
 
 	final HttpClient client;
 

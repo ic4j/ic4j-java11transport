@@ -13,11 +13,12 @@ plugins {
 
 
 group 'org.ic4j'
-version '0.7.4'
+version '0.8.0'
 
 sourceCompatibility = 11
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -44,34 +45,35 @@ task fatJar(type: Jar) {
 
 test {
     useJUnitPlatform()
+    jvmArgs = ['-DblsVerify=false']
 }
 
 dependencies {
 	// https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-	compileOnly group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
+	compileOnly group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
 	
-	implementation group: 'org.ic4j', name: 'ic4j-agent', version: '0.7.4'
-	implementation group: 'org.ic4j', name: 'ic4j-candid', version: '0.7.4'	
+	implementation group: 'org.ic4j', name: 'ic4j-agent', version: '0.8.0'
+	implementation group: 'org.ic4j', name: 'ic4j-candid', version: '0.8.0'	
 	
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
 		
 	// https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
-	implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78.1'
+	implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.80'
 
 	// https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
-	implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.78.1'
+	implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.80'
 	
 	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.11.0'
+	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.12.2'
 	
 	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
-	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.11.0'
+	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.12.2'
 	
 	// https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
-	testImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.11.0'	
+	testImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.12.2'		
 	
 	// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-	testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.16'	
+	testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.17'	
 }
 
