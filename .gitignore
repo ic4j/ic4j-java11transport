@@ -1,5 +1,6 @@
 /.gradle/
 /bin/
+/scripts/
 /gradle.properties
 /secring.gpg
 /build-export.gradle
@@ -8,3 +9,5 @@
 /.project
 /.dfx/
 .vscode/settings.json
+DEPLOY.md
+

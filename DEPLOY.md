@@ -4,14 +4,47 @@ This file is intentionally ignored by git.
 
 ## Prerequisites
 
-- Compile and test compatibility must be verified on JDK 11 first, then re-tested on JDK 21.
 - Use JDK 21 for publishing tasks.
-- `build-export.gradle` is the publishing build.
+- `build-export.gradle` is the publishing build file.
 - Signing can come from `gradle.properties` or environment variables.
 - Central credentials can come from either:
   - `centralUsername` and `centralPassword`
   - `ossrhToken` and `ossrhTokenPassword`
   - `CENTRAL_PORTAL_USERNAME` and `CENTRAL_PORTAL_PASSWORD`
+
+## Local Env Scripts
+
+Local helper scripts live under `scripts/`.
+Credentials are read from `~/.m2/maven-central.properties` using `ossrhUsername` and `ossrhPassword`.
+
+| Script | Purpose |
+|---|---|
+| `load-maven-env.sh` | Reads `~/.m2/maven-central.properties`, exports `CENTRAL_PORTAL_USERNAME`, `CENTRAL_PORTAL_PASSWORD`, `SIGNING_PASSWORD`, sets `JAVA_HOME` |
+| `release-preflight.sh` | Checks env vars, Maven settings, and verifies the Central Portal token |
+| `central-auth-check.py` | Verifies credentials against the Central Portal API |
+
+Load the environment before any publish step:
+
+```bash
+source scripts/load-maven-env.sh
+```
+
+Run preflight checks before a real release:
+
+```bash
+source scripts/load-maven-env.sh
+scripts/release-preflight.sh
+```
+
+## Dry Runs
+
+Run dry runs first to validate task wiring and credentials without uploading artifacts:
+
+```bash
+source scripts/load-maven-env.sh
+gradle -b build-export.gradle --no-daemon -PcentralUsername="$CENTRAL_PORTAL_USERNAME" -PcentralPassword="$CENTRAL_PORTAL_PASSWORD" publishAggregationToCentralPortal --dry-run --console=plain
+gradle -b build-export.gradle --no-daemon -PcentralUsername="$CENTRAL_PORTAL_USERNAME" -PcentralPassword="$CENTRAL_PORTAL_PASSWORD" publishAggregationToCentralSnapshots --dry-run --console=plain
+```
 
 ## Test Matrix
 
@@ -26,25 +59,24 @@ gradle clean test --console=plain
 ### JDK 21 test
 
 ```bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 21)
-export PATH="$JAVA_HOME/bin:$PATH"
-./scripts/deploy_local_tests.sh && gradle cleanTest test --console=plain
+source scripts/load-maven-env.sh
+./scripts/deploy_local_tests.sh
+gradle cleanTest test --console=plain
 ```
 
 ## Full Local Validation
 
 ```bash
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
-./scripts/deploy_local_tests.sh && gradle cleanTest test
+source scripts/load-maven-env.sh
+./scripts/deploy_local_tests.sh
+gradle cleanTest test
 ```
 
 ## Local Maven
 
 ```bash
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
-gradle -b build-export.gradle --no-daemon publishToMavenLocal --console=plain
+source scripts/load-maven-env.sh
+gradle -b build-export.gradle --no-daemon -PcentralUsername="$CENTRAL_PORTAL_USERNAME" -PcentralPassword="$CENTRAL_PORTAL_PASSWORD" publishToMavenLocal --console=plain
 ```
 
 Artifacts are published under:
@@ -56,17 +88,16 @@ Artifacts are published under:
 ## Central Portal Release
 
 ```bash
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
-gradle -b build-export.gradle --no-daemon publishAggregationToCentralPortal --console=plain
+source scripts/load-maven-env.sh
+scripts/release-preflight.sh
+gradle -b build-export.gradle --no-daemon -PcentralUsername="$CENTRAL_PORTAL_USERNAME" -PcentralPassword="$CENTRAL_PORTAL_PASSWORD" publishAggregationToCentralPortal --console=plain
 ```
 
 ## Central Snapshots
 
 ```bash
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
-gradle -b build-export.gradle --no-daemon publishAggregationToCentralSnapshots --console=plain
+source scripts/load-maven-env.sh
+gradle -b build-export.gradle --no-daemon -PcentralUsername="$CENTRAL_PORTAL_USERNAME" -PcentralPassword="$CENTRAL_PORTAL_PASSWORD" publishAggregationToCentralSnapshots --console=plain
 ```
 
 ## Useful Checks
@@ -79,6 +110,7 @@ gradle -b build-export.gradle publishToMavenLocal --info
 Release checklist for 0.8.0 and later:
 
 1. Run `gradle clean test` on JDK 11.
-2. Run `./scripts/deploy_local_tests.sh && gradle cleanTest test` on JDK 21.
-3. Run `gradle -b build-export.gradle publishToMavenLocal` on JDK 21.
-4. Publish only after the JDK 11 and 21 validation steps all pass.
+2. Run `source scripts/load-maven-env.sh && ./scripts/deploy_local_tests.sh && gradle cleanTest test` on JDK 21.
+3. Run `source scripts/load-maven-env.sh && gradle -b build-export.gradle -PcentralUsername="$CENTRAL_PORTAL_USERNAME" -PcentralPassword="$CENTRAL_PORTAL_PASSWORD" publishToMavenLocal` on JDK 21.
+4. Run `source scripts/load-maven-env.sh && scripts/release-preflight.sh`.
+5. Publish only after the JDK 11 and 21 validation steps all pass.
