@@ -13,7 +13,7 @@ plugins {
 
 
 group 'org.ic4j'
-version '0.8.0'
+version '0.8.5'
 
 sourceCompatibility = 11
 
@@ -52,17 +52,17 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 	compileOnly group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
 	
-	implementation group: 'org.ic4j', name: 'ic4j-agent', version: '0.8.0'
-	implementation group: 'org.ic4j', name: 'ic4j-candid', version: '0.8.0'	
+	implementation group: 'org.ic4j', name: 'ic4j-agent', version: '0.8.5'
+	implementation group: 'org.ic4j', name: 'ic4j-candid', version: '0.8.5'
 	
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
 		
 	// https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
-	implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.80'
+	implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.83'
 
 	// https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
-	implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.80'
+	implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.83'
 	
 	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
 	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.12.2'

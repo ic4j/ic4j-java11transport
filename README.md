@@ -23,8 +23,8 @@ Agent agent = new AgentBuilder().transport(transport).identity(identity).build()
 
 To add IC4J Java 11 Transport library to your Java project use Maven or Gradle import from Maven Central.
 
-<a href="https://search.maven.org/artifact/org.ic4j/ic4j-java11transport/0.8.0/jar">
-https://search.maven.org/artifact/org.ic4j/ic4j-java11transport/0.8.0/jar
+<a href="https://search.maven.org/artifact/org.ic4j/ic4j-java11transport/0.8.5/jar">
+https://search.maven.org/artifact/org.ic4j/ic4j-java11transport/0.8.5/jar
 </a>
 
 **Maven:**
@@ -32,35 +32,46 @@ https://search.maven.org/artifact/org.ic4j/ic4j-java11transport/0.8.0/jar
 <dependency>
   <groupId>org.ic4j</groupId>
   <artifactId>ic4j-java11transport</artifactId>
-  <version>0.8.0</version>
+  <version>0.8.5</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-implementation 'org.ic4j:ic4j-java11transport:0.8.0'
+implementation 'org.ic4j:ic4j-java11transport:0.8.5'
 ```
 
 # Build
 
 You need JDK 11 or JDK 21 to build IC4J Java 11 Transport.
 
-```
-gradle build
+```shell
+gradle clean build
 ```
 
 ## Running Tests
 
 Tests run against a local Internet Computer replica (dfx). Deploy the test canister first:
 
-```
+```shell
 ./scripts/deploy_local_tests.sh
 ```
 
 Then run the tests:
 
-```
-gradle test
+```shell
+gradle cleanTest test
 ```
 
 BLS certificate verification is disabled for local replica testing (configured automatically via `jvmArgs` in `build.gradle`).
+
+## Publishing to Maven Local
+
+Version `0.8.5` depends on `org.ic4j:ic4j-agent:0.8.5` and `org.ic4j:ic4j-candid:0.8.5`. Ensure both artifacts are available in Maven local, then build, test, and publish the transport:
+
+```shell
+gradle clean build
+gradle -b build-export.gradle --no-daemon publishToMavenLocal --console=plain
+```
+
+The published artifacts are written to `~/.m2/repository/org/ic4j/ic4j-java11transport/0.8.5`.
